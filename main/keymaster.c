@@ -12,13 +12,14 @@
 
 uint8_t screen[1024];
 
-void print_bitmap() {
-	for (int y = 0; y < WIDTH; y++) {
-		for (int x = 0; x < HEIGHT; x++) {
-			int index = (y * HEIGHT+ x) / 8;// Determine which byte
-			int bit = (y * HEIGHT+ x) % 8;// Determine the bit position
+void print_bitmap_in_horizontal_mode() {
+	for (int y = 0; y < HEIGHT; y++) {
+		for (int x = 0; x < WIDTH; x++) {
+			int page = y / 8;// Determine which byte
+			int index = page * 128 + x;
+			int bit = y & 0b111;// Determine the bit position (equivalent to y % 8)
 			// Check if the pixel is set (1) or not (0)
-			if (screen[index] & (1 << bit)) {
+			if (screen[index] & (1 << bit)){
 				printf("#"); // Pixel is on
 			} else {
 				printf(" "); // Pixel is off
@@ -51,5 +52,5 @@ void app_main(void)
 	esp_lcd_panel_handle_t panel = initialise_oled();
 	verify_memory_address_mode(panel, screen);
 	display_keymaster_logo(panel, screen);
-
+	print_bitmap_in_horizontal_mode();
 } 

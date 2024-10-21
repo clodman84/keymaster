@@ -88,9 +88,12 @@ esp_lcd_panel_handle_t initialise_oled(void)
 	ESP_ERROR_CHECK(esp_lcd_panel_reset(panel)); // this has to be called before attempting to init the panel
 	ESP_ERROR_CHECK(esp_lcd_panel_init(panel));
 	ESP_ERROR_CHECK(esp_lcd_panel_disp_on_off(panel, true));
+
+	/*
 	ESP_ERROR_CHECK(esp_lcd_panel_io_tx_param(io_handle, SSD1306_CMD_SET_MEMORY_ADDR_MODE, (uint8_t[]) {
 		0x01 // vertical addressing mode
 	}, 1));
+	*/
 
 	return panel;
 }
