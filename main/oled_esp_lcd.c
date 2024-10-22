@@ -8,7 +8,11 @@
 #include "esp_err.h"
 #include "esp_log.h"
 #include "driver/i2c_master.h"
+#include "freertos/idf_additions.h"
+#include "portmacro.h"
+
 #include "oled_esp_lcd.h"
+#include "images.h"
 
 #define I2C_BUS_PORT  0
 #define LCD_PIXEL_CLOCK_HZ    (400 * 1000)
@@ -97,3 +101,20 @@ esp_lcd_panel_handle_t initialise_oled(void)
 
 	return panel;
 }
+
+void verify_memory_address_mode(esp_lcd_panel_handle_t panel, uint8_t *screen){
+	uint8_t* start = screen;
+	for (int i = 0; i < 64; i++){
+		for (int j = 0; j < 16; j++){
+			memset(start, 0xFF, 1);
+			start += 1;
+	 		esp_lcd_panel_draw_bitmap(panel, 0, 0, 128, 64, screen);
+			vTaskDelay(23 / portTICK_PERIOD_MS);	
+		}
+	}
+}
+
+void display_bitmap(esp_lcd_panel_handle_t panel, uint8_t *bitmap){
+	esp_lcd_panel_draw_bitmap(panel, 0, 0, 128, 64, bitmap);
+}
+

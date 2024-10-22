@@ -2,10 +2,9 @@
 #define ULGL
 
 #include <stdint.h>
-#include "esp_lcd_types.h"
 
-void display_keymaster_logo(esp_lcd_panel_handle_t panel, uint8_t *screen);
-void verify_memory_address_mode(esp_lcd_panel_handle_t panel, uint8_t *screen);
-void print_bitmap_in_horizontal_mode(uint8_t *screen);
+void print_bitmap_in_horizontal_mode(uint8_t *screen, int height, int width);
+void draw_text(char *text, int len, int page, uint8_t *screen);
+void draw_keymaster_logo(uint8_t *screen);
 
 #endif

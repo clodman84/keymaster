@@ -1,22 +1,17 @@
 /*
  ULTRA Lightweight Graphics Library, designed for this project 
 */
+
+#include <stdio.h>
 #include <stdint.h>
 #include <string.h>
-#include "esp_lcd_panel_ops.h"
-#include "esp_lcd_types.h"
-#include "images.h"
-#include "freertos/idf_additions.h"
-#include "portmacro.h"
 #include "ulgl.h"
+#include "images.h"
 
-#define HEIGHT 64 
-#define WIDTH 128 
-
-
-void print_bitmap_in_horizontal_mode(uint8_t *screen) {
-	for (int y = 0; y < HEIGHT; y++) {
-		for (int x = 0; x < WIDTH; x++) {
+void print_bitmap_in_horizontal_mode(uint8_t *screen, int height, int width){
+	// Helper function to verify the contents of a bitmap 
+	for (int y = 0; y < height; y++) {
+		for (int x = 0; x < width; x++) {
 			int page = y / 8;// Determine which byte
 			int index = page * 128 + x;
 			int bit = y & 0b111;// Determine the bit position (equivalent to y % 8)
@@ -32,20 +27,18 @@ void print_bitmap_in_horizontal_mode(uint8_t *screen) {
 }
 
 
-void verify_memory_address_mode(esp_lcd_panel_handle_t panel, uint8_t *screen){
-	uint8_t* start = screen;
-	for (int i = 0; i < 64; i++){
-		for (int j = 0; j < 16; j++){
-			memset(start, 0xFF, 1);
-			start += 1;
-	 		esp_lcd_panel_draw_bitmap(panel, 0, 0, 128, 64, screen);
-			vTaskDelay(23 / portTICK_PERIOD_MS);	
-		}
+void draw_text(char *text, int len, int page, uint8_t *screen){
+	int offset = page * 128;
+	for (int i = 0; i < len; i++){
+		char c = text[i];
+		uint8_t* char_glyph = fontData7x8[c - 32];
+		// printf("%c\n", c);
+		// print_bitmap_in_horizontal_mode(char_glyph, 8, 7);
+		// printf("\n");
+		memcpy(screen + offset + (7 * i), char_glyph, 7);  // the font is 7 bytes wide
 	}
-}
+};
 
-void display_keymaster_logo(esp_lcd_panel_handle_t panel, uint8_t *screen){
+void draw_keymaster_logo(uint8_t *screen){
 	memcpy(screen, keymaster_logo, 1024);
-	esp_lcd_panel_draw_bitmap(panel, 0, 0, 128, 64, screen);
 }
-
