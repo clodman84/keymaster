@@ -40,9 +40,19 @@ static const char* get_btn_index(button_handle_t btn)
 static void button_single_click_cb(void *arg, void *data)
 {
     ui_config* config = (ui_config *)data;
-    strcat(text_buffer, get_btn_index((button_handle_t)arg));
+    switch (get_btn_index((button_handle_t)arg)[0]) {
+        case 'B':  // (B)ackspace
+            text_buffer[strlen(text_buffer) - 1] = '\0';
+            break;
+        case 'C':  // (C)lear screen
+            text_buffer[0] = '\0';
+            break;
+        default:
+            strcat(text_buffer, get_btn_index((button_handle_t)arg));
+    }
 
     // drawing the text onto the screen
+    memset(config->bitmap, 0x00, 1024); // clearing the screen
     draw_text(text_buffer, 0, config->bitmap);
     display_bitmap(config->panel, config->bitmap);
 }
