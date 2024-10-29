@@ -4,13 +4,12 @@
 
 #include "oled_esp_lcd.h"
 #include "ulgl.h"
-#include "keypad.h"
+#include "ui.h"
 
 #define BUTTON_NUM 16
 static button_handle_t g_btns[BUTTON_NUM] = {0};
 
 char text_buffer[64];
-uint8_t screen[1024];
 
 #define NUMBER_OF_ROWS 4
 #define NUMBER_OF_COLUMNS 4
@@ -40,16 +39,16 @@ static const char* get_btn_index(button_handle_t btn)
 
 static void button_single_click_cb(void *arg, void *data)
 {
+    ui_config* config = (ui_config *)data;
     strcat(text_buffer, get_btn_index((button_handle_t)arg));
-    draw_text(text_buffer, 0, screen);
-    display_bitmap((esp_lcd_panel_handle_t)data, screen);
+
+    // drawing the text onto the screen
+    draw_text(text_buffer, 0, config->bitmap);
+    display_bitmap(config->panel, config->bitmap);
 }
 
-
-void initialize_keypad() {
+void initialize_ui(ui_config* config) {
     // Define the GPIO pins for the keypad rows and columns
-    esp_lcd_panel_handle_t panel = initialise_oled();
-
     int32_t row_gpio[NUMBER_OF_ROWS] = {19, 18, 5, 17}; // Example GPIOs for rows
     int32_t col_gpio[NUMBER_OF_COLUMNS] = {16, 4, 2, 15}; // Example GPIOs for columns
 
@@ -68,7 +67,7 @@ void initialize_keypad() {
         for (int j = 0; j < NUMBER_OF_COLUMNS; j++) {
             cfg.matrix_button_config.col_gpio_num = col_gpio[j];
             g_btns[i * NUMBER_OF_ROWS + j] = iot_button_create(&cfg);
-            iot_button_register_cb(g_btns[i * NUMBER_OF_ROWS + j], BUTTON_SINGLE_CLICK, button_single_click_cb, panel);
+            iot_button_register_cb(g_btns[i * NUMBER_OF_ROWS + j], BUTTON_SINGLE_CLICK, button_single_click_cb, config);
        }
     }
 }
