@@ -27,9 +27,9 @@ void print_bitmap_in_horizontal_mode(uint8_t *screen, int height, int width){
 }
 
 
-void draw_text(char *text, int len, int page, uint8_t *screen){
+void draw_text(char *text, int page, uint8_t *screen){
 	int offset = page * 128;
-	for (int i = 0; i < len; i++){
+	for (int i = 0; text[i] != '\0'; i++){
 		char c = text[i];
 		uint8_t* char_glyph = fontData7x8[c - 32];
 		// printf("%c\n", c);
@@ -38,6 +38,7 @@ void draw_text(char *text, int len, int page, uint8_t *screen){
 		memcpy(screen + offset + (7 * i), char_glyph, 7);  // the font is 7 bytes wide
 	}
 };
+
 
 void draw_keymaster_logo(uint8_t *screen){
 	memcpy(screen, keymaster_logo, 1024);
